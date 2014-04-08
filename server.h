@@ -4,6 +4,4 @@ struct server_options {
     char *port;
 };
 
-void run_server(struct server_options *);
-
-void base_handler(int);
+void run_server(struct server_options *, void (*) (int));
