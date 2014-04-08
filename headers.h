@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-void get_basic_headers(char *result);
-void get_headers(char *result, const char *mimetype, int clen);
+void get_status_code(char *result, int status_code);
+void get_headers(char *result, int status_code, const char *mimetype, int clen);
 void append_header(char *headers, const char *key, const char *value);
 
 void write_response(int sockfd, char *headers, char *body);
