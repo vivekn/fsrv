@@ -140,10 +140,12 @@ void get_status_code(char *result, int status_code) {
 void get_headers(char *result, int status_code, const char *mimetype, int clen) {
     result = (char *) malloc(HEADER_S);
     get_status_code(result, status_code);
-    append_header(result, "Content-Type", mimetype);
+    if (mimetype != NULL)
+        append_header(result, "Content-Type", mimetype);
     char slen[33];
     sprintf(slen, "%d", clen);
-    append_header(result, "Content-Length", slen);
+    if (clen > 0)
+        append_header(result, "Content-Length", slen);
 }
 
 void append_header(char *result, const char *key, const char *value) {
@@ -159,10 +161,12 @@ void write_response(int sockfd, char *headers, char *body) {
     write(sockfd, headers, hlen);
     free(headers);
 
-    int blen = strlen(body);
-    write(sockfd, body, blen);
-    close(sockfd);
-    free(body);
+    if (body != NULL) {
+        int blen = strlen(body);
+        write(sockfd, body, blen);
+        close(sockfd);
+        free(body);
+    }
 }
 
 void write_file_response(int sockfd, char *headers, FILE *file) {

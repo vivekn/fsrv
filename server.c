@@ -10,6 +10,10 @@
 #define MAX_QUEUED 1000
 
 void run_server(struct server_options *opts, void (*handler) (int)) {
+    if (chdir(opts->path) == -1) {
+        perror("Error opening path");
+    }
+
     int sockfd;
     struct addrinfo myname, *res;
     struct sockaddr_storage their_addr;
