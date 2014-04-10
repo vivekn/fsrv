@@ -137,6 +137,16 @@ void get_status_code(char *result, int status_code) {
     }
 }
 
+/* Depends on the file command provided by the shell */
+void get_mime_type(char *filename, char *mime_type) {
+    char command[256];
+    sprintf(command, "file --mime-type -b %s", filename);
+    FILE* pipe = popen(command, "r");
+    int read = fscanf(pipe, "%s", mime_type);
+    if (!read) strcpy(mime_type, "application/octet-stream"); // Default mime type
+    pclose(pipe);
+}
+
 void get_headers(char *result, int status_code, const char *mimetype, int clen) {
     result = (char *) malloc(HEADER_S);
     get_status_code(result, status_code);
