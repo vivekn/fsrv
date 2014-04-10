@@ -19,7 +19,7 @@ int extract_request(int fd, char *request) {
         bytes_read = read(fd, buf, BUF_SIZE);
         total_bytes += bytes_read;
         if (total_bytes > MAX_REQUEST_SIZE) {
-            char *response;
+            char *response = NULL;
             get_headers(response, 400, NULL, 0);
             write_response(fd, response, NULL);
             return -1;
@@ -34,9 +34,9 @@ void file_handler(int socket_fd)  {
     if(extract_request(socket_fd, request)) return;
 
     char *request_line = strtok(request, "\n");
-    char *method = strtok(request_line, " ");
+    strtok(request_line, " ");
     char *path = strtok(NULL, " ");
-    char *resp_headers, *resp_body;
+    char *resp_headers = NULL;
     
     FILE* file = fopen(path, "r");
     if (file == NULL) {
