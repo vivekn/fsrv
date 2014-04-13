@@ -31,12 +31,19 @@ int extract_request(int fd, char *request) {
 
 void file_handler(int socket_fd)  {
     char request[MAX_REQUEST_SIZE];
+    char *resp_headers = NULL;
     if(extract_request(socket_fd, request)) return;
 
     char *request_line = strtok(request, "\n");
     strtok(request_line, " ");
     char *path = strtok(NULL, " ");
-    char *resp_headers = NULL;
+    while((*path) == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
+
+    if (strstr(path, "..") != NULL) { // this is a directory traversal attack
+        get_headers(&resp_headers, 400, NULL, 0);    
+        write_response(socket_fd, resp_headers, NULL);
+    }
+
     FILE* file = fopen(path, "r");
     if (file == NULL) {
         get_headers(&resp_headers, 404, NULL, 0);
