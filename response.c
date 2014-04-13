@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "response.h"
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -205,4 +205,8 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
     close(sockfd);
 }
 
-
+void write_error_response(int socket_fd, int status_code) {
+    char *headers = NULL;
+    get_headers(&headers, status_code, NULL, 0);
+    write_response(socket_fd, headers, NULL);
+}

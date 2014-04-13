@@ -1,8 +1,8 @@
 CFLAGS=-Wall
 INCLUDE=-I./includes
 
-fsrv: server.o headers.o handlers.o main.c test
-	gcc $(CFLAGS) main.c server.o headers.o handlers.o -o fsrv $(INCLUDE)
+fsrv: server.o response.o handlers.o main.c test
+	gcc $(CFLAGS) main.c server.o response.o handlers.o -o fsrv $(INCLUDE)
 
 server.o: server.h server.c
 	gcc $(CFLAGS) -c server.c $(INCLUDE)
@@ -10,10 +10,10 @@ server.o: server.h server.c
 test: *.c *.h tests/*.c
 	gcc $(CFLAGS) -o test tests/main.c; ./test
 
-headers.o: headers.h headers.c
-	gcc $(CFLAGS) -c headers.c $(INCLUDE)
+response.o: response.h response.c
+	gcc $(CFLAGS) -c response.c $(INCLUDE)
 
-handlers.o: handlers.h handlers.c headers.h 
+handlers.o: handlers.h handlers.c response.h 
 	gcc $(CFLAGS) -c handlers.c $(INCLUDE)
 
 clean: 

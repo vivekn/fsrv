@@ -1,5 +1,5 @@
 #include "handlers.h"
-#include "headers.h"
+#include "response.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -21,9 +21,7 @@ int extract_request(int fd, char **request) {
         bytes_read = read(fd, buf, BUF_SIZE);
         total_bytes += bytes_read;
         if (total_bytes > MAX_REQUEST_SIZE) {
-            char *response = NULL;
-            get_headers(&response, 400, NULL, 0);
-            write_response(fd, response, NULL);
+            write_error_response(fd, 400);
             return -1;
         }
         memcpy(request_buf, buf, bytes_read);
@@ -43,16 +41,14 @@ void file_handler(int socket_fd)  {
     while((*path) == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
 
     if (strstr(path, "..") != NULL) { // this is a directory traversal attack
-        get_headers(&resp_headers, 400, NULL, 0);    
-        write_response(socket_fd, resp_headers, NULL);
+        write_error_response(socket_fd, 400);
         free(request);
         return;
     }
 
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        get_headers(&resp_headers, 404, NULL, 0);
-        write_response(socket_fd, resp_headers, NULL);
+        write_error_response(socket_fd, 404); // File not found
     } else {
         int clen = fseek(file, 0, SEEK_END);
         rewind(file);
