@@ -6,7 +6,7 @@ fsrv: server.o headers.o handlers.o main.c test
 server.o: server.h server.c
 	gcc $(CFLAGS) -c server.c
 
-test: *.o *.c *.h tests/*.c
+test: *.c *.h tests/*.c
 	gcc $(CFLAGS) -o test tests/main.c; ./test
 
 headers.o: headers.h headers.c
