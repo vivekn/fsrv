@@ -7,6 +7,7 @@
 #define HEADER_S 2048
 #define BUF_SIZE 4096
 
+extern int errno;
 
 void get_status_code(char *result, int status_code) {
     // Auto generated code follows
@@ -147,15 +148,15 @@ void get_mime_type(char *filename, char *mime_type) {
     pclose(pipe);
 }
 
-void get_headers(char *result, int status_code, const char *mimetype, int clen) {
-    result = (char *) malloc(HEADER_S);
-    get_status_code(result, status_code);
+void get_headers(char **result, int status_code, const char *mimetype, int clen) {
+    *result = (char *) malloc(HEADER_S);
+    get_status_code(*result, status_code);
     if (mimetype != NULL)
-        append_header(result, "Content-Type", mimetype);
+        append_header(*result, "Content-Type", mimetype);
     char slen[33];
     sprintf(slen, "%d", clen);
     if (clen > 0)
-        append_header(result, "Content-Length", slen);
+        append_header(*result, "Content-Length", slen);
 }
 
 void append_header(char *result, const char *key, const char *value) {
@@ -168,29 +169,33 @@ void append_header(char *result, const char *key, const char *value) {
 void write_response(int sockfd, char *headers, char *body) {
     strcat(headers, "\r\n");
     int hlen = strlen(headers);
-    write(sockfd, headers, hlen);
+    write(sockfd, headers, hlen+1);
     free(headers);
-
     if (body != NULL) {
         int blen = strlen(body);
         write(sockfd, body, blen);
         close(sockfd);
         free(body);
+    } else {
+        close(sockfd);
     }
+
 }
 
 void write_file_response(int sockfd, char *headers, FILE *file) {
     strcat(headers, "\r\n");
     int hlen = strlen(headers);
-    write(sockfd, headers, hlen);
+    write(sockfd, headers, hlen+1);
     free(headers);
 
     int fd = fileno(file);
     char buf[BUF_SIZE];
 
     int bytes_read = read(fd, buf, BUF_SIZE);
-    if (bytes_read == -1)
+    if (bytes_read == -1) {
         perror("Error reading file");
+        exit(errno);
+    }
     while(bytes_read > 0) {
         write(sockfd, buf, bytes_read);
         bytes_read = read(fd, buf, BUF_SIZE);

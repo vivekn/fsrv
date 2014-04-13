@@ -1,4 +1,4 @@
-CFLAGS=-Wall 
+CFLAGS=-Wall
 
 fsrv: server.o headers.o handlers.o main.c test
 	gcc $(CFLAGS) main.c server.o headers.o handlers.o -o fsrv

@@ -20,7 +20,7 @@ int extract_request(int fd, char *request) {
         total_bytes += bytes_read;
         if (total_bytes > MAX_REQUEST_SIZE) {
             char *response = NULL;
-            get_headers(response, 400, NULL, 0);
+            get_headers(&response, 400, NULL, 0);
             write_response(fd, response, NULL);
             return -1;
         }
@@ -37,17 +37,16 @@ void file_handler(int socket_fd)  {
     strtok(request_line, " ");
     char *path = strtok(NULL, " ");
     char *resp_headers = NULL;
-    
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        get_headers(resp_headers, 404, NULL, 0);
+        get_headers(&resp_headers, 404, NULL, 0);
         write_response(socket_fd, resp_headers, NULL);
     } else {
         int clen = fseek(file, 0, SEEK_END);
         rewind(file);
         char mime_type[256];
         get_mime_type(path, mime_type);
-        get_headers(resp_headers, 200, mime_type, clen);
+        get_headers(&resp_headers, 200, mime_type, clen);
         write_file_response(socket_fd, resp_headers, file);
     }
 }
