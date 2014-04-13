@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include "url_encode.c"
 
 #define MAX_REQUEST_SIZE (1 << 14)
 #define BUF_SIZE (1 << 12)
@@ -12,8 +13,9 @@ void hello_handler(int socket_fd) {
     close(socket_fd);
 }
 
-int extract_request(int fd, char *request) {
+int extract_request(int fd, char **request) {
     char buf[BUF_SIZE];
+    char request_buf[MAX_REQUEST_SIZE];
     int total_bytes = 0, bytes_read;
     do {
         bytes_read = read(fd, buf, BUF_SIZE);
@@ -24,15 +26,16 @@ int extract_request(int fd, char *request) {
             write_response(fd, response, NULL);
             return -1;
         }
-        memcpy(request, buf, bytes_read);
+        memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
+    *request = url_encode(request_buf);
     return 0;
 }
 
 void file_handler(int socket_fd)  {
-    char request[MAX_REQUEST_SIZE];
+    char *request = NULL;
     char *resp_headers = NULL;
-    if(extract_request(socket_fd, request)) return;
+    if(extract_request(socket_fd, &request)) return;
 
     char *request_line = strtok(request, "\n");
     strtok(request_line, " ");
@@ -42,6 +45,8 @@ void file_handler(int socket_fd)  {
     if (strstr(path, "..") != NULL) { // this is a directory traversal attack
         get_headers(&resp_headers, 400, NULL, 0);    
         write_response(socket_fd, resp_headers, NULL);
+        free(request);
+        return;
     }
 
     FILE* file = fopen(path, "r");
@@ -56,4 +61,5 @@ void file_handler(int socket_fd)  {
         get_headers(&resp_headers, 200, mime_type, clen);
         write_file_response(socket_fd, resp_headers, file);
     }
+    free(request);
 }
