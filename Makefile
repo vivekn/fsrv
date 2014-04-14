@@ -13,7 +13,7 @@ test: *.c *.h tests/*.c
 response.o: response.h response.c
 	gcc $(CFLAGS) -c response.c $(INCLUDE)
 
-handlers.o: handlers.h handlers.c response.h 
+handlers.o: handlers.h handlers.c response.h response.c
 	gcc $(CFLAGS) -c handlers.c $(INCLUDE)
 
 clean: 

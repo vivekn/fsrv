@@ -26,7 +26,7 @@ int extract_request(int fd, char **request) {
         }
         memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
-    *request = url_encode(request_buf);
+    *request = url_decode(request_buf);
     return 0;
 }
 
@@ -38,8 +38,7 @@ void file_handler(int socket_fd)  {
     char *request_line = strtok(request, "\n");
     strtok(request_line, " ");
     char *path = strtok(NULL, " ");
-    while((*path) == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
-
+    while(*path == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
     if (strstr(path, "..") != NULL) { // this is a directory traversal attack
         write_error_response(socket_fd, 400);
         free(request);
@@ -51,7 +50,6 @@ void file_handler(int socket_fd)  {
         write_error_response(socket_fd, 404); // File not found
     } else {
         int clen = fseek(file, 0, SEEK_END);
-        rewind(file);
         char mime_type[256];
         get_mime_type(path, mime_type);
         get_headers(&resp_headers, 200, mime_type, clen);

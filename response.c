@@ -157,6 +157,7 @@ void get_headers(char **result, int status_code, const char *mimetype, int clen)
     sprintf(slen, "%d", clen);
     if (clen > 0)
         append_header(*result, "Content-Length", slen);
+    append_header(*result, "Connection", "close");
 }
 
 void append_header(char *result, const char *key, const char *value) {
@@ -191,12 +192,14 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
     int fd = fileno(file);
     char buf[BUF_SIZE];
 
+    lseek(fd, 0, SEEK_SET);
+
     int bytes_read = read(fd, buf, BUF_SIZE);
     if (bytes_read == -1) {
         perror("Error reading file");
         exit(errno);
     }
-    while(bytes_read > 0) {
+    while(bytes_read >= 0) {
         write(sockfd, buf, bytes_read);
         bytes_read = read(fd, buf, BUF_SIZE);
     }
