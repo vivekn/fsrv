@@ -27,6 +27,7 @@ int extract_request(int fd, char **request) {
         memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
     *request = url_decode(request_buf);
+    puts(*request);
     return 0;
 }
 
@@ -49,7 +50,8 @@ void file_handler(int socket_fd)  {
     if (file == NULL) {
         write_error_response(socket_fd, 404); // File not found
     } else {
-        int clen = fseek(file, 0, SEEK_END);
+        fseek(file, 0, SEEK_END);
+        long clen = ftell(file);
         char mime_type[256];
         get_mime_type(path, mime_type);
         get_headers(&resp_headers, 200, mime_type, clen);
