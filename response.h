@@ -9,4 +9,4 @@ void append_header(char *headers, const char *key, const char *value);
 void flush_client(int sockfd);
 void write_response(int sockfd, char *headers, char *body);
 void write_file_response(int sockfd, char *headers, FILE *file);
-void write_error_response(int socket_fd, int status_code);
+void write_error_response(int socket_fd, int status_code, const char *message);

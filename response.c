@@ -188,12 +188,9 @@ void write_response(int sockfd, char *headers, char *body) {
     if (body != NULL) {
         int blen = strlen(body);
         write(sockfd, body, blen);
-        close(sockfd);
         free(body);
-    } else {
-        close(sockfd);
-    }
-
+    } 
+    close(sockfd);
 }
 
 void write_file_response(int sockfd, char *headers, FILE *file) {
@@ -213,7 +210,6 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
         exit(errno);
     }
     while(bytes_read > 0) {
-        puts("writing chunk");
         write(sockfd, buf, bytes_read);
         bytes_read = read(fd, buf, BUF_SIZE);
     }
@@ -222,8 +218,13 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
     close(sockfd);
 }
 
-void write_error_response(int socket_fd, int status_code) {
-    char *headers = NULL;
-    get_headers(&headers, status_code, NULL, 0);
-    write_response(socket_fd, headers, NULL);
+void write_error_response(int socket_fd, int status_code, const char *message) {
+    char *headers = NULL, *mcopy = NULL;
+    if (message != NULL) {
+        mcopy = strdup(message); // prevents passing a pointer to a string literal
+        get_headers(&headers, status_code, "text/plain", strlen(message));
+    } else {
+        get_headers(&headers, status_code, NULL, 0);
+    }
+    write_response(socket_fd, headers, mcopy);
 }

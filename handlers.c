@@ -21,7 +21,7 @@ int extract_request(int fd, char **request) {
         bytes_read = read(fd, buf, BUF_SIZE);
         total_bytes += bytes_read;
         if (total_bytes > MAX_REQUEST_SIZE) {
-            write_error_response(fd, 400);
+            write_error_response(fd, 400, "Bad request");
             return -1;
         }
         memcpy(request_buf, buf, bytes_read);
@@ -41,14 +41,14 @@ void file_handler(int socket_fd)  {
     char *path = strtok(NULL, " ");
     while(*path == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
     if (strstr(path, "..") != NULL) { // this is a directory traversal attack
-        write_error_response(socket_fd, 400);
+        write_error_response(socket_fd, 400, "Bad request");
         free(request);
         return;
     }
 
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        write_error_response(socket_fd, 404); // File not found
+        write_error_response(socket_fd, 404, "Not found"); // File not found
     } else {
         fseek(file, 0, SEEK_END);
         long clen = ftell(file);
