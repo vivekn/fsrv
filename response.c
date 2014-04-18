@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/socket.h>
 
 #define HEADER_S 2048
@@ -149,6 +150,14 @@ void get_mime_type(char *filename, char *mime_type) {
     pclose(pipe);
 }
 
+void get_date(char **time_str) {
+    *time_str = (char *) malloc(BUF_SIZE);
+    time_t now = time(NULL);
+    struct tm *tm_now = gmtime(&now);
+    strftime(*time_str, sizeof(*time_str), "%a, %d %b %Y %H:%M:%S %Z", tm_now);
+    free(tm_now);
+}
+
 void get_headers(char **result, int status_code, const char *mimetype, long clen) {
     *result = (char *) malloc(HEADER_S);
     get_status_code(*result, status_code);
@@ -158,6 +167,11 @@ void get_headers(char **result, int status_code, const char *mimetype, long clen
     sprintf(slen, "%ld", clen);
     if (clen > 0)
         append_header(*result, "Content-Length", slen);
+    append_header(*result, "Server", "fsrv/0.0.1");
+    char *time_str = NULL;
+    get_date(&time_str);
+    append_header(*result, "Date", time_str);
+    free(time_str);
     append_header(*result, "Connection", "close");
 }
 

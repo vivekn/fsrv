@@ -55,6 +55,7 @@ void file_handler(int socket_fd)  {
         char mime_type[256];
         get_mime_type(path, mime_type);
         get_headers(&resp_headers, 200, mime_type, clen);
+        free(mime_type);
         write_file_response(socket_fd, resp_headers, file);
     }
     free(request);
