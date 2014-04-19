@@ -61,7 +61,6 @@ void file_handler(int socket_fd)  {
         free(request);
         return;
     }
-
     FILE* file = fopen(path, "r");
     if (file == NULL) {
         write_error_response(socket_fd, 404, "Not found"); // File not found

@@ -1,16 +1,16 @@
 CFLAGS=-Wall 
 INCLUDE=-I./includes
 
-all: fsrv fsrv-pf fsrv-t
+all: fsrv fsrv-pf fsrv-t test
 	touch all
 
-fsrv: server.o response.o handlers.o main.c test
+fsrv: server.o response.o handlers.o main.c 
 	gcc $(CFLAGS) main.c server.o response.o handlers.o -o fsrv $(INCLUDE)
 
-fsrv-pf: prefork.o response.o handlers.o main.c test
+fsrv-pf: prefork.o response.o handlers.o main.c 
 	gcc $(CFLAGS) main.c prefork.o response.o handlers.o -o fsrv-pf $(INCLUDE)
 
-fsrv-t: threaded.o response.o handlers.o main.c test
+fsrv-t: threaded.o response.o handlers.o main.c 
 	gcc $(CFLAGS) main.c threaded.o response.o handlers.o -o fsrv-t $(INCLUDE)
 
 server.o: server.h server.c

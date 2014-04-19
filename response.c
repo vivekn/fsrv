@@ -155,7 +155,7 @@ void get_date(char **time_str) {
     time_t now = time(NULL);
     struct tm *tm_now = gmtime(&now);
     strftime(*time_str, BUF_SIZE, "%a, %d %b %Y %H:%M:%S %Z", tm_now);
-    free(tm_now);
+    //free(tm_now); No need to free as this structure is statically allocated
 }
 
 void get_headers(char **result, int status_code, const char *mimetype, long clen) {
