@@ -1,5 +1,9 @@
 #include <stdio.h>
+
+// The below line is a hack to prevent a linker error. FIXME
+#define CREATE_LISTENING_SOCKET
 #include "server.h"
+
 #include "handlers.h"
 #include <string.h>
 #include <assert.h>
