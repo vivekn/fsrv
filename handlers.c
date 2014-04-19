@@ -27,8 +27,18 @@ int extract_request(int fd, char **request) {
         memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
     *request = url_decode(request_buf);
-    puts(*request);
+    // puts(*request);
     return 0;
+}
+
+int check_method(int fd, const char *method) {
+    if (strcmp(method, "GET") == 0) {
+        return GET;
+    } else if (strcmp(method, "HEAD") == 0) {
+        return HEAD;
+    } 
+    write_error_response(fd, 501, "Method not implemented");
+    return -1;
 }
 
 void file_handler(int socket_fd)  {
@@ -37,7 +47,13 @@ void file_handler(int socket_fd)  {
     if(extract_request(socket_fd, &request)) return;
 
     char *request_line = strtok(request, "\n");
-    strtok(request_line, " ");
+    char *method = strtok(request_line, " ");
+    int method_type = check_method(socket_fd, method);
+    if (method_type == -1) {
+        free(request);
+        return;
+    }
+
     char *path = strtok(NULL, " ");
     while(*path == '/') path++; // strip leading slashes (prevents malicious client from accessing host directory structure)
     if (strstr(path, "..") != NULL) { // this is a directory traversal attack
@@ -55,8 +71,13 @@ void file_handler(int socket_fd)  {
         char mime_type[256];
         get_mime_type(path, mime_type);
         get_headers(&resp_headers, 200, mime_type, clen);
-        free(mime_type);
-        write_file_response(socket_fd, resp_headers, file);
+        switch(method_type) {
+            case GET:
+                write_file_response(socket_fd, resp_headers, file);
+                break;
+            case HEAD:
+                write_response(socket_fd, resp_headers, NULL);
+        }
     }
     free(request);
 }

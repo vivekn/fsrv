@@ -141,7 +141,7 @@ void get_status_code(char *result, int status_code) {
 }
 
 /* Depends on the file command provided by the shell */
-void get_mime_type(char *filename, char *mime_type) {
+void get_mime_type(const char *filename, char *mime_type) {
     char command[256];
     sprintf(command, "file --mime-type -b %s", filename);
     FILE* pipe = popen(command, "r");
@@ -154,7 +154,7 @@ void get_date(char **time_str) {
     *time_str = (char *) malloc(BUF_SIZE);
     time_t now = time(NULL);
     struct tm *tm_now = gmtime(&now);
-    strftime(*time_str, sizeof(*time_str), "%a, %d %b %Y %H:%M:%S %Z", tm_now);
+    strftime(*time_str, BUF_SIZE, "%a, %d %b %Y %H:%M:%S %Z", tm_now);
     free(tm_now);
 }
 
