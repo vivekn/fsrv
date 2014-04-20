@@ -238,6 +238,7 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
         write(sockfd, buf, bytes_read);
         bytes_read = read(fd, buf, BUF_SIZE);
     }
+    printf("Closing %d\n", fd);
     close(fd);
     fclose(file);
     close(sockfd);
