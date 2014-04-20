@@ -142,20 +142,33 @@ void get_status_code(char *result, int status_code) {
 
 /* Depends on the file command provided by the shell */
 void get_mime_type(const char *filename, char *mime_type) {
-    char command[256];
-    sprintf(command, "file --mime-type -b %s", filename);
-    FILE* pipe = popen(command, "r");
+    /*static FILE* pipe = NULL;
+    if (pipe == NULL) {
+        // Run xargs in interactive mode
+        pipe = popen("xargs -n 1 file --mime-type -b", "r+"); 
+    }
+    fprintf(pipe, "%s\n", filename);
     int read = fscanf(pipe, "%s", mime_type);
-    if (!read) strcpy(mime_type, "application/octet-stream"); // Default mime type
-    pclose(pipe);
+    if (!read)*/ 
+        strcpy(mime_type, "application/octet-stream"); // Default mime type
 }
 
-void get_date(char **time_str) {
-    *time_str = (char *) malloc(BUF_SIZE);
+char * get_date() {
+    static char time_str[128];
+    static time_t last = 0; 
+    
+    if (!last) 
+        last = time(NULL);
+
+    // Update only once per second
     time_t now = time(NULL);
-    struct tm *tm_now = gmtime(&now);
-    strftime(*time_str, BUF_SIZE, "%a, %d %b %Y %H:%M:%S %Z", tm_now);
-    //free(tm_now); No need to free as this structure is statically allocated
+    
+    if (now - last >= 1) {
+        last = now;
+        struct tm *tm_now = gmtime(&now);
+        strftime(time_str, BUF_SIZE, "%a, %d %b %Y %H:%M:%S %Z", tm_now);
+    }
+    return time_str;
 }
 
 void get_headers(char **result, int status_code, const char *mimetype, long clen) {
@@ -168,10 +181,8 @@ void get_headers(char **result, int status_code, const char *mimetype, long clen
     if (clen > 0)
         append_header(*result, "Content-Length", slen);
     append_header(*result, "Server", "fsrv/0.0.1");
-    char *time_str = NULL;
-    get_date(&time_str);
+    char *time_str = get_date();
     append_header(*result, "Date", time_str);
-    free(time_str);
     append_header(*result, "Connection", "close");
 }
 

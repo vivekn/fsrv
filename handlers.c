@@ -27,7 +27,7 @@ int extract_request(int fd, char **request) {
         memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
     *request = url_decode(request_buf);
-    // puts(*request);
+    //puts(*request);
     return 0;
 }
 

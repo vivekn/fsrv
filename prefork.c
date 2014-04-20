@@ -1,5 +1,5 @@
 #include "server.h"
-#define NUM_PROCS 1
+#define NUM_PROCS 8
 
 void run_server(struct server_options *opts, void (*handler) (int)) {
     struct sockaddr_storage their_addr;
