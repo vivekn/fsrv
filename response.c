@@ -149,7 +149,7 @@ void get_mime_type(const char *filename, char *mime_type) {
     }
     fprintf(pipe, "%s\n", filename);
     int read = fscanf(pipe, "%s", mime_type);
-    if (!read)*/ 
+    if (!read) */
         strcpy(mime_type, "application/octet-stream"); // Default mime type
 }
 
@@ -171,7 +171,7 @@ char * get_date() {
     return time_str;
 }
 
-void get_headers(char **result, int status_code, const char *mimetype, long clen) {
+void get_headers(char **restrict result, int status_code, const char *restrict mimetype, long clen) {
     *result = (char *) malloc(HEADER_S);
     get_status_code(*result, status_code);
     if (mimetype != NULL)
@@ -187,7 +187,7 @@ void get_headers(char **result, int status_code, const char *mimetype, long clen
 }
 
 // This is not very efficient, but I don't want to add too much complexity for now.
-void append_header(char *result, const char *key, const char *value) {
+void append_header(char *restrict result, const char *restrict key, const char *restrict value) {
     strcat(result, key);
     strcat(result, ": ");
     strcat(result, value);
@@ -205,7 +205,7 @@ void flush_client(int sockfd) {
     }
 }
 
-void write_response(int sockfd, char *headers, char *body) {
+void write_response(int sockfd, char *restrict headers, char *restrict body) {
     strcat(headers, "\r\n");
     int hlen = strlen(headers);
     write(sockfd, headers, hlen);
@@ -218,7 +218,7 @@ void write_response(int sockfd, char *headers, char *body) {
     close(sockfd);
 }
 
-void write_file_response(int sockfd, char *headers, FILE *file) {
+void write_file_response(int sockfd, char *restrict headers, FILE *restrict file) {
     strcat(headers, "\r\n");
     int hlen = strlen(headers);
     write(sockfd, headers, hlen);
@@ -238,7 +238,7 @@ void write_file_response(int sockfd, char *headers, FILE *file) {
         write(sockfd, buf, bytes_read);
         bytes_read = read(fd, buf, BUF_SIZE);
     }
-    printf("Closing %d\n", fd);
+    //printf("Closing %d\n", fd);
     close(fd);
     fclose(file);
     close(sockfd);

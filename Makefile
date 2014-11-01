@@ -1,5 +1,5 @@
-CFLAGS=-Wall 
-INCLUDE=-I./includes
+CFLAGS=-Wall
+INCLUDE=-I./includes -I.
 
 all: fsrv fsrv-pf fsrv-t test
 	touch all
@@ -21,10 +21,12 @@ prefork.o: server.h prefork.c
 	
 threaded.o: server.h threaded.c
 	gcc $(CFLAGS) -c threaded.c $(INCLUDE)
-	
-test: *.c *.h tests/*.c
-	gcc $(CFLAGS) -o test tests/main.c; ./test
 
+fstring.o: fstring.h fstring.c
+	gcc $(CFLAGS) -c fstring.c $(INCLUDE)
+	
+test: *.c *.h tests/*.c fstring.o
+	gcc $(CFLAGS) tests/main.c fstring.o -o test $(INCLUDE); ./test 
 response.o: response.h response.c
 	gcc $(CFLAGS) -c response.c $(INCLUDE)
 

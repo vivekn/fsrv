@@ -19,12 +19,12 @@ int extract_request(int fd, char **request) {
     int total_bytes = 0, bytes_read;
     do {
         bytes_read = read(fd, buf, BUF_SIZE);
+        memcpy(request_buf + total_bytes, buf, bytes_read);
         total_bytes += bytes_read;
         if (total_bytes > MAX_REQUEST_SIZE) {
             write_error_response(fd, 400, "Bad request");
             return -1;
         }
-        memcpy(request_buf, buf, bytes_read);
     } while(bytes_read == BUF_SIZE);
     *request = url_decode(request_buf);
     //puts(*request);
@@ -62,7 +62,7 @@ void file_handler(int socket_fd)  {
         return;
     }
     FILE* file = fopen(path, "r");
-    printf("Opened %d\n", fileno(file));
+    // printf("Opened %d\n", fileno(file));
     if (file == NULL) {
         write_error_response(socket_fd, 404, "Not found"); // File not found
     } else {
