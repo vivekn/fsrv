@@ -1,7 +1,7 @@
 CFLAGS=-Wall
 INCLUDE=-I./includes -I.
 
-all: fsrv fsrv-pf fsrv-t test
+all: fsrv fsrv-pf
 	touch all
 
 fsrv: server.o response.o handlers.o main.c 
