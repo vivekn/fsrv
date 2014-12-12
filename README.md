@@ -6,9 +6,9 @@ fsrv
 Installation
 ------------
 ````
-$ git clone https://github.com/vivekn/fsrv.git
-$ cd fsrv
-$ make
+git clone https://github.com/vivekn/fsrv.git
+cd fsrv
+make
 ````
 Then add this directory to your PATH.
 
