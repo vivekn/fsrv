@@ -26,6 +26,6 @@ fsrv-pf /var/www/public 80
 
 ----
 
-Author: Vivek Narayanan < vivek_n@me.com >
+Author: Vivek Narayanan < vivek.narayanan@outlook.com >
 
 LICENSE: BSD
