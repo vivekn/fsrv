@@ -1,4 +1,11 @@
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+CFLAGS=-Wall -Drestrict=__restrict -std=gnu99
+else # Mac/Darwin
 CFLAGS=-Wall
+endif
+
+
 INCLUDE=-I./includes -I.
 
 all: fsrv fsrv-pf

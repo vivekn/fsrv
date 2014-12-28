@@ -6,10 +6,9 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <errno.h>
 
 #define MAX_QUEUED 128
-
-extern int errno;
 
 struct server_options {
     int n_threads;
