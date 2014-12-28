@@ -1,6 +1,6 @@
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-CFLAGS=-Wall -Drestrict=__restrict -std=gnu99
+CFLAGS=-Wall -std=gnu99
 else # Mac/Darwin
 CFLAGS=-Wall
 endif
