@@ -12,6 +12,7 @@
 
 struct server_options {
     int n_threads;
+    char *host;
     char *path;
     char *port;
 };
@@ -32,7 +33,7 @@ int create_listening_socket(struct server_options *opts) {
     memset(&myname, 0, sizeof(myname));
     myname.ai_family = AF_UNSPEC;
     myname.ai_socktype = SOCK_STREAM;
-    getaddrinfo(NULL, opts->port, &myname, &res);
+    getaddrinfo(opts->host, opts->port, &myname, &res);
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (bind(sockfd, res->ai_addr, res->ai_addrlen) == -1) {
